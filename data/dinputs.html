@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>esp</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="js/jquery.min.js"></script>
+
+    <script>
+	
+	
+        $(document).ready(function() {
+            setInterval("get_digital_input_status()", 2000);
+        });
+		
+		
+		
+        function get_digital_input_status() {
+            var someUrl = "/digital_inputs";
+            $.ajax({url: someUrl,dataType: "json",success: function(response) {
+                    if (response.digital_inputs["din1"] == 1)
+                        $("#din1").html("HIGH")
+                    else
+                        $("#din1").html("LOW")
+                    if (response.digital_inputs["din2"] == 1)
+                        $("#din2").html("HIGH")
+                    else
+                        $("#din2").html("LOW")
+                    if (response.digital_inputs["din3"] == 1)
+                        $("#din3").html("HIGH")
+                    else
+                        $("#din3").html("LOW")
+                }})}
+				
+				
+    </script>
+
+</head>
+
+<body>
+    <header>
+        <img src="images/logo.jpg">
+        <h1>ESP8266 BASED WEBSERVER</h1>
+    </header>
+
+    <nav>
+
+        <ul>
+            <li><a href="index.html">Digital Outputs</a>
+            </li>
+            <li><a class="active" href="dinputs.html">Digital inputs</a>
+            </li>
+            <li><a href="anoutputs.html">Analog Outputs</a>
+            </li>
+            <li><a href="aninputs.html">Analog Inputs</a>
+            </li>
+			<li><a href="words.html">Lot of text</a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <section>
+        <table id="inputsTable">
+            <tr>
+                <th>Digital Input</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>DIn1</td>
+                <td id="din1">waiting..</td>
+                </td>
+            </tr>
+            <tr>
+                <td>DIn2</td>
+                <td id="din2">waiting..</td>
+            </tr>
+            <tr>
+                <td>DIn3</td>
+                <td id="din3">waiting..</td>
+            </tr>
+        </table>
+    </section>
+
+
+</body>
+
+</html>
