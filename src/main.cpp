@@ -3,6 +3,8 @@
 #include <FS.h>
 
 #include <ModbusMaster232.h>
+#include <SoftwareSerial.h>
+#include <Registros.h>
 
 /*
  * SSID TeleCentro-82ba
@@ -14,9 +16,9 @@ const char* password = "U2N2ZMLR2NQZ";
 
 ESP8266WebServer server(80);
 
+SoftwareSerial swSer(4, 5);
 
-// Instantiate ModbusMaster object as slave ID 1
-ModbusMaster232 node(1);
+ModbusMaster232 node(1,swSer);
 
 int response = 0;
 
@@ -25,6 +27,7 @@ int response = 0;
 // Define the number of bits to read
 #define bitQty 1
 
+Registros regs;
 
 /**********dynamic contents ***********/
 const char get_toggle_digitalOut[]={"/digital_outputs/toggle"};
@@ -171,6 +174,8 @@ int reading = analogRead(A0);
 
 
 void setup ( void ) {    
+
+    node.begin(19200);
     pinMode(D0, INPUT);
     pinMode(D1, INPUT);
     pinMode(D2, INPUT);
@@ -221,7 +226,22 @@ void setup ( void ) {
     server.begin();
 }
 
+void leerRegistros(int tickLR){
+    static long ultimoCambio = 0;
+    long ahora = millis();
+
+    if (ahora - ultimoCambio > tickLR){
+      ahora = millis();
+       response = node.readHoldingRegisters(4, 1); 
+  /// get value - captura valor
+      reg1 = node.getResponseBuffer(0);
+    }
+
+}
+
 void loop ( void ) {
     server.handleClient();
+    leerRegistros(100);
+
     
 }

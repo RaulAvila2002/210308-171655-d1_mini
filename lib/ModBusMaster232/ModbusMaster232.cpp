@@ -68,6 +68,12 @@ ModbusMaster232::ModbusMaster232(uint8_t u8MBSlave)
 }
 
 
+ModbusMaster232::ModbusMaster232(uint8_t u8MBSlave, uint8_t u8SerialPort)
+{
+  _u8SerialPort = u8SerialPort;
+  _u8MBSlave = u8MBSlave;
+}
+
 /**
 CRC ESP8266
 
