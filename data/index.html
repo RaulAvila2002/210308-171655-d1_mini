@@ -14,32 +14,28 @@
 
     <!-- getDigitalOutput() -->       
     <script>
-	
+	    // Refresh values
         $(document).ready(function() {
-            setInterval("get_digital_output_status()", 2000);
-            setInterval("get_status_registers()", 2000);
+            setInterval("get_digital_output_status()", 1000);
+            setInterval("get_status_registers()", 1000);
         });
     
         
-
         function get_digital_output_status() { var someUrl = "/digital_outputs";
             $.ajax({url: someUrl,dataType: "json",success: function(response) {
                     if (response.digital_outputs["dout1"] == 1)
                         $("#dout1").html("HIGH")
                     else
                         $("#dout1").html("LOW")
+
                     if (response.digital_outputs["dout2"] == 1)
                         $("#dout2").html("HIGH")
                     else
                         $("#dout2").html("LOW")
-                    if (response.digital_outputs["dout3"] == 1)
-                        $("#dout3").html("HIGH")
-                    else
-                        $("#dout3").html("LOW")
-                    if (response.digital_outputs["dout4"] == 1)
-                        $("#dout4").html("HIGH")
-                    else
-                        $("#dout4").html("LOW")}})}
+                    }
+                }
+                )
+            }
     
     
     
@@ -63,8 +59,9 @@
     </script>
 </head>
 <body>
-
+    <!-- layout -->
 <div id="layout" class="active"> 
+        <!-- getDigitalOutput() -->
     <a href="#menu" id="menuLink" class="menu-link active">
          <span></span>
     </a>
@@ -133,20 +130,6 @@
                     <td>
                         <button class="pure-button " onclick="digital_output_toggle('dout2')">Toggle</button>
                     </td>    
-                </tr>
-                <tr>
-                    <td>DOut3</td>
-                    <td id="dout3">waiting..</td>
-                    <td>
-                        <button class="pure-button " onclick="digital_output_toggle('dout3')">Toggle</button>
-                    </td>    
-                </tr>
-                <tr>
-                    <td>DOut4</td>
-                    <td id="dout4">waiting..</td>
-                    <td>
-                        <button class="pure-button " onclick="digital_output_toggle('dout4')">Toggle</button>
-                    </td>
                 </tr>
             </table>
 

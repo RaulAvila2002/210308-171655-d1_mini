@@ -3,22 +3,30 @@
 #include <FS.h>
 
 #include <ModbusMaster232.h>
-#include <SoftwareSerial.h>
+
 #include <Registros.h>
 
 /*
  * SSID TeleCentro-82ba
  * PASS U2N2ZMLR2NQZ
 */
+//PINES WEMOS
+#define D0 16
+#define D1 5
+#define D2 4
+#define D3 0
+#define D4 2
+#define D5 14
+#define D6 12
+#define D7 13
+#define D8 15
 
 const char *ssid = "TeleCentro-82ba";
 const char *password = "U2N2ZMLR2NQZ";
 
 ESP8266WebServer server(80);
 
-SoftwareSerial swSer(4, 5);
-
-ModbusMaster232 node(1, swSer);
+ModbusMaster232 node(1);
 
 int response = 0;
 int reg1 = 0;
@@ -48,23 +56,13 @@ char toggleOutput(String pinName)
 {
   if (pinName.equals("dout1"))
   {
-    digitalWrite(D4, !digitalRead(D4));
-    return digitalRead(D4);
+    digitalWrite(D7, !digitalRead(D7));
+    return digitalRead(D7);
   }
   else if (pinName.equals("dout2"))
   {
-    digitalWrite(D5, !digitalRead(D5));
-    return digitalRead(D5);
-  }
-  else if (pinName.equals("dout3"))
-  {
-    digitalWrite(D6, !digitalRead(D6));
-    return digitalRead(D6);
-  }
-  else if (pinName.equals("dout4"))
-  {
-    digitalWrite(D7, !digitalRead(D7));
-    return digitalRead(D7);
+    digitalWrite(D8, !digitalRead(D8));
+    return digitalRead(D8);
   }
   else
     return 2;
@@ -128,8 +126,7 @@ bool handleFileRead(String path)
 void handleDigitalOutStatusJson()
 {
   char someBuffer[200];
-  sprintf(someBuffer, "{\"digital_outputs\":{\"dout1\":%c,\"dout2\":%c,\"dout3\":%c,\"dout4\":%c}}", !digitalRead(D4) + 48,
-          !digitalRead(D5) + 48, !digitalRead(D6) + 48, !digitalRead(D7) + 48);
+  sprintf(someBuffer, "{\"digital_outputs\":{\"dout1\":%c,\"dout2\":%c}}", !digitalRead(D7) + 48, !digitalRead(D8) + 48);
 
   server.send(200, "application/json", someBuffer);
 }
@@ -145,7 +142,7 @@ void handleDigitalInStatusJson()
 {
   char someBuffer[200];
   sprintf(someBuffer, "{\"digital_inputs\":{\"din1\":%c,\"din2\":%c,\"din3\":%c}}", digitalRead(D0) + 48,
-          digitalRead(D1) + 48, digitalRead(D2) + 48);
+          digitalRead(D5) + 48, digitalRead(D3) + 48);
   server.send(200, "application/json", someBuffer);
 }
 //get_status_an_out
@@ -198,23 +195,19 @@ void readTemperatureSensor(void)
 void setup(void)
 {
 
-  node.begin(9600);
   pinMode(D0, INPUT);
-  pinMode(D1, INPUT);
-  pinMode(D2, INPUT);
+  pinMode(D5, INPUT);
+  pinMode(D3, INPUT);
 
   pinMode(A0, INPUT); //ADC
 
-  pinMode(D4, OUTPUT);
-  pinMode(D5, OUTPUT);
-  pinMode(D6, OUTPUT);
   pinMode(D7, OUTPUT);
-  digitalWrite(D4, 1);
-  digitalWrite(D5, 1);
-  digitalWrite(D6, 1);
-  digitalWrite(D7, 1);
-
   pinMode(D8, OUTPUT);
+
+  digitalWrite(D7, 1);
+  digitalWrite(D8, 1);
+
+  pinMode(D4, OUTPUT);
 
   Serial.begin(9600);
 
