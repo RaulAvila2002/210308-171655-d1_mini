@@ -2,9 +2,10 @@
 #include <ESP8266WebServer.h>
 #include <FS.h>
 
-#include <ModbusMaster232.h>
-
+#include <ModbusRTU.h>
+#include <SoftwareSerial.h>
 #include <Registros.h>
+#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 
 /*
  * SSID TeleCentro-82ba
@@ -21,16 +22,20 @@
 #define D7 13
 #define D8 15
 
-const char *ssid = "TeleCentro-82ba";
-const char *password = "U2N2ZMLR2NQZ";
-
+#define SLAVE_ID 1
+#define FIRST_REG 0
+#define REG_COUNT 2
+WiFiManager wm;
 ESP8266WebServer server(80);
 
-ModbusMaster232 node(1);
+SoftwareSerial S; //D6/D7  (RX , TX)
+
+ModbusRTU mb;
 
 int response = 0;
 int reg1 = 0;
 
+uint16_t res[REG_COUNT];
 // Define one address for reading
 #define address 1
 // Define the number of bits to read
@@ -192,6 +197,16 @@ void readTemperatureSensor(void)
                                         //Serial.print(temperatureC); Serial.println(" degrees C");
 }
 
+bool cb(Modbus::ResultCode event, uint16_t transactionId, void *data)
+{ // Callback to monitor errors
+  if (event != Modbus::EX_SUCCESS)
+  {
+    Serial.print("Request result: 0x");
+    Serial.print(event, HEX);
+  }
+  return true;
+}
+
 void setup(void)
 {
 
@@ -212,19 +227,29 @@ void setup(void)
   Serial.begin(9600);
 
   SPIFFS.begin();
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
+  wm.setConfigPortalBlocking(false);
 
-  WiFi.begin(ssid, password);
-  Serial.println("");
-
-  while (WiFi.status() != WL_CONNECTED)
+  //automatically connect using saved credentials if they exist
+  //If connection fails it starts an access point with the specified name
+  if (wm.autoConnect("AutoConnectAP"))
   {
-    delay(500);
+    Serial.println("connected...yeey :)");
   }
-  Serial.print("Local IP address:");
-  Serial.println(WiFi.localIP());
-
+  else
+  {
+    Serial.println("Configportal running");
+  }
   // Initialize Modbus communication baud rate
-  node.begin(9600);
+
+//#define D1 5 -> tx
+//#define D2 4 -> rx
+
+  S.begin(9600, 4, 5, SWSERIAL_8N1, false, 64, 64);
+
+  mb.begin(&S);
+  mb.setBaudrate(9600);
+  mb.master();
   delay(100);
 
   server.on(get_status_dig_out, handleDigitalOutStatusJson);
@@ -251,14 +276,18 @@ void leerRegistros(int tickLR)
   if (ahora - ultimoCambio > tickLR)
   {
     ahora = millis();
-    response = node.readHoldingRegisters(4, 1);
+    response = mb.readHreg(SLAVE_ID, FIRST_REG, res, REG_COUNT, cb); //node.readHoldingRegisters(4, 1);
     /// get value - captura valor
-    reg1 = node.getResponseBuffer(0);
+    reg1 = res[0]; //node.getResponseBuffer(0);
   }
 }
 
 void loop(void)
 {
+  wm.process();
   server.handleClient();
+  //mb.readHreg(SLAVE_ID, FIRST_REG, res, REG_COUNT, cb);
   leerRegistros(100);
+  //mb.task();
+  //yield();
 }

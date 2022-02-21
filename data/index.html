@@ -21,7 +21,8 @@
         });
     
         
-        function get_digital_output_status() { var someUrl = "/digital_outputs";
+        function get_digital_output_status() { 
+            var someUrl = "/digital_outputs";
             $.ajax({url: someUrl,dataType: "json",success: function(response) {
                     if (response.digital_outputs["dout1"] == 1)
                         $("#dout1").html("HIGH")
@@ -39,7 +40,8 @@
     
     
     
-        function digital_output_toggle(pinToToggle) {var someUrl = "/digital_outputs/toggle?pin=" + pinToToggle;
+        function digital_output_toggle(pinToToggle) {
+            var someUrl = "/digital_outputs/toggle?pin=" + pinToToggle;
             $.ajax({url: someUrl,dataType: "text", success: function(response) {
                     if (response == '1') {
                         $('#' + pinToToggle).html("HIGH");
@@ -151,10 +153,7 @@
             </p>
         </div>
     </div>
- 
-
-    <form id="form-mqtt" class="pure-form form-settings">
-        <div class="panel" id="panel-mqtt" >
+    <div class="panel" id="panel-mqtt" >
         <div class="header">
             <h1>Broker Config</h1>
             <h2>A subtitle for your page goes here</h2>
@@ -176,11 +175,8 @@
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
             </div>
-        </div>
-    </form>
-
-    <form id="form-event" class="pure-form form-settings">
-        <div class="panel" id="panel-event" >
+    </div>
+    <div class="panel" id="panel-event" >
             <div class="header">
                 <h1>Events</h1>
                 <h2>A subtitle for your page goes here</h2>
@@ -202,11 +198,8 @@
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
             </div>
-        </div>
-    </form>
-
-    <form id="form-contact" class="pure-form form-settings">
-        <div class="panel" id="panel-contact">
+    </div>
+    <div class="panel" id="panel-contact">
             <div class="header">
                 <h1>Contact Config</h1>
                 <h2>A subtitle for your page goes here</h2>
@@ -228,13 +221,9 @@
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
             </div>
-        </div>
-    </form>
-
-    <form id="form-wifi" class="pure-form form-settings">
-        <div class="panel" id="panel-wifi">
-
-            <div class="header">
+    </div>
+    <div class="panel" id="panel-wifi">
+       <div class="header">
                 <h1>WIFI</h1>
                 <h2>You can configure up to 5 different WiFi networks. The device will try to connect in order of signal strength.</h2>
             </div>
@@ -279,10 +268,11 @@
 
                 </fieldset>
             </div>
-        </div>
-    </form>
+     
+     </div>
     </div>
 </div>
+
 <script src="js/custom.js"></script>
 <script src="js/ui.js"></script>
 

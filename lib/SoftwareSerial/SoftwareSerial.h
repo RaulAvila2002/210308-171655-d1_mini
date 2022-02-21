@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
 
-#ifndef __EspSoftwareSerial_h
-#define __EspSoftwareSerial_h
+#ifndef __SoftwareSerial_h
+#define __SoftwareSerial_h
 
 #include "circular_queue/circular_queue.h"
 #include <Stream.h>
@@ -31,7 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /// If only one tx or rx wanted then use this as parameter for the unused pin.
 constexpr int SW_SERIAL_UNUSED_PIN = -1;
 
-enum SoftwareSerialConfig {
+enum SoftwareSerialConfig
+{
     SWSERIAL_5N1 = 0,
     SWSERIAL_6N1,
     SWSERIAL_7N1,
@@ -42,15 +43,16 @@ enum SoftwareSerialConfig {
 /// the constructor however has optional rx buffer capacity arguments
 /// for byte buffer and ISR bit buffer.
 /// Baudrates up to 115200 can be used.
-class SoftwareSerial : public Stream {
+class SoftwareSerial : public Stream
+{
 public:
     SoftwareSerial();
-    SoftwareSerial(const SoftwareSerial&) = delete;
-    SoftwareSerial& operator= (const SoftwareSerial&) = delete;
+    SoftwareSerial(const SoftwareSerial &) = delete;
+    SoftwareSerial &operator=(const SoftwareSerial &) = delete;
     virtual ~SoftwareSerial();
     void begin(int32_t baud, int8_t rxPin, int8_t txPin = -1,
-        SoftwareSerialConfig config = SWSERIAL_8N1,
-        bool invert = false, int bufCapacity = 64, int isrBufCapacity = 0);
+               SoftwareSerialConfig config = SWSERIAL_8N1,
+               bool invert = false, int bufCapacity = 64, int isrBufCapacity = 0);
     void begin(int32_t baud, SoftwareSerialConfig config) = delete;
     int32_t baudRate();
     /// Transmit control pin.
@@ -61,23 +63,27 @@ public:
     bool overflow();
 
     int available() override;
-    int availableForWrite() {
-        if (!m_txValid) return 0;
+    int availableForWrite()
+    {
+        if (!m_txValid)
+            return 0;
         return 1;
     }
     int peek() override;
     int read() override;
     /// The readBytes functions are non-waiting, there is no timeout.
-    size_t readBytes(uint8_t* buffer, size_t size) override;
+    size_t readBytes(uint8_t *buffer, size_t size) override;
     /// The readBytes functions are non-waiting, there is no timeout.
-    size_t readBytes(char* buffer, size_t size) override {
-        return readBytes(reinterpret_cast<uint8_t*>(buffer), size);
+    size_t readBytes(char *buffer, size_t size) override
+    {
+        return readBytes(reinterpret_cast<uint8_t *>(buffer), size);
     }
     void flush() override;
     size_t write(uint8_t byte) override;
-    size_t write(const uint8_t* buffer, size_t size) override;
-    size_t write(const char* buffer, size_t size) {
-        return write(reinterpret_cast<const uint8_t*>(buffer), size);
+    size_t write(const uint8_t *buffer, size_t size) override;
+    size_t write(const char *buffer, size_t size)
+    {
+        return write(reinterpret_cast<const uint8_t *>(buffer), size);
     }
     operator bool() const { return m_rxValid || m_txValid; }
 
@@ -87,10 +93,18 @@ public:
     void enableTx(bool on);
 
     // AVR compatibility methods.
-    bool listen() { enableRx(true); return true; }
+    bool listen()
+    {
+        enableRx(true);
+        return true;
+    }
     void end();
     bool isListening() { return m_rxEnabled; }
-    bool stopListening() { enableRx(false); return true; }
+    bool stopListening()
+    {
+        enableRx(false);
+        return true;
+    }
 
     /// Set an event handler for received data.
     void onReceive(std::function<void(int available)> handler);
@@ -113,9 +127,9 @@ private:
     bool isValidGPIOpin(int8_t pin);
     /* check m_rxValid that calling is safe */
     void rxBits();
-    void rxBits(const uint32_t& isrCycle);
+    void rxBits(const uint32_t &isrCycle);
 
-    static void rxBitISR(SoftwareSerial* self);
+    static void rxBitISR(SoftwareSerial *self);
 
     // Member variables
     bool m_oneWire;
@@ -133,10 +147,10 @@ private:
     int32_t m_bitCycles;
     uint32_t m_periodDeadline;
     bool m_intTxEnabled;
-    std::unique_ptr<circular_queue<uint8_t> > m_buffer;
+    std::unique_ptr<circular_queue<uint8_t>> m_buffer;
     // the ISR stores the relative bit times in the buffer. The inversion corrected level is used as sign bit (2's complement):
     // 1 = positive including 0, 0 = negative.
-    std::unique_ptr<circular_queue<uint32_t> > m_isrBuffer;
+    std::unique_ptr<circular_queue<uint32_t>> m_isrBuffer;
     std::atomic<bool> m_isrOverflow;
     uint32_t m_isrLastCycle;
     int8_t m_rxCurBit; // 0 - 7: data bits. -1: start bit. 8: stop bit.
